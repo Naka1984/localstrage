@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>tic-tac-toe</title>
+    <link rel="stylesheet" href="marubatsu-style.css">
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <meta name="viewport" content="width=320,
+      height=480,
+      initial-scale=1.0,
+      minimum-scale=1.0,
+      maximum-scale=2.0,
+      user-scalable=yes" />
+</head>
+
+<body>
+    <div id ="wrapper">
+
+    <header>
+        <div><H1 style="text-align:center" style="color: antiquewhite; font-size: 60pt;">〇×ゲーム</H1></div>
+      </header>
+      
+      
+
+
+      <main>
+        <p id="start5"></p> 
+          <body onload="ShowImage();">
+         <div align="center">   <img id="screen1" name="screen1" ></div>
+            <div align="center" style="color:brown; font-size:40pt;font-weight: bold; "><span id="turn_result">先攻・後攻じゃんけん</span></div>
+    <div id="your_hands"> 
+            <div id="gu_btn"><img src="img/gu.png" class="hand_imgs"></div>
+            <div id="cho_btn"><img src="img/cho.png" class="hand_imgs"></div>
+            <div id="par_btn"><img src="img/par.png" class="hand_imgs"></div>
+    </div>
+    
+    <div align="center"><button class = "favorite styled" type="button" id="btn">スタート</button></div>
+
+
+    </div>
+        
+
+  <div id="top">
+         <p id="start"></p>
+        <p id="start2"></p> 
+    </div> 
+    <div id="end" class="is-hidden">
+        <h1 id="judgdisplay"></h1>
+        <div align="center"><h3 id="start3"></h3></div>
+        <p id="start4"></p> 
+    </div>
+    </div>
+    <div id="display" class="is-hidden">
+        <h2>〇×ゲーム対戦中</h2>
+        <div align="center" style="color: brown; font-size: 30pt; font-weight: bold;"><span id="next-turn">あなたの番です</span></div>
+    </div>
+    <div id="game">
+        <div class="field"></div>
+        <div class="field"></div>
+        <div class="field"></div>
+        <div class="field"></div>
+        <div class="field"></div>
+        <div class="field"></div>
+        <div class="field"></div>
+        <div class="field"></div>
+        <div class="field"></div>
+    </div>
+
+
+    <!-- <input type="text" id="key">
+    <textarea id="memo"></textarea>
+    <ul> -->
+        <div align = "center"><input type="text" id="replay"><button  class = "favorite styled" type="button" id="kifu_replay" >`棋譜再生</button></div>
+        <div align = "center"><button  class = "favorite styled" type="button" id="clear" >戦績のリセット</button></div>
+    <!-- </ul> -->
+</main>
+<table id="list">
+    <!-- ここに追加データが挿入される -->
+    </table>
+<script>
+let mykifu = [];
+let pckifu = [];
+
+var jyunban_id = 0;
+
+let janken_result = 0;
+const scenetop = document.querySelector("#top");
+const sceneend = document.querySelector("#end");
+const start = document.querySelector("#start");
+const start2 = document.querySelector("#start2");
+const start3 = document.querySelector("#start3");
+const start4 = document.querySelector("#start4");
+const scecedisplay = document.querySelector("#display");
+let field = document.querySelectorAll(".field");            //9つのマス
+let turn = document.querySelector("h2");
+let judgdisplay = document.querySelector("#judgdisplay");
+let game = document.querySelector("#game");
+let board = Array(9);//三つ揃ったか判定のために使う
+let winflag = true;//勝敗が決まったらfalseにしてゲーム終了
+let count = 0;//偶数なら先手の手番奇数なら後手の手番
+
+const win_patterns = [   //考えられる勝利パターン
+    [0, 1, 2],           //一行目のマス横並び
+    [3, 4, 5],           //二行目のマス横並び
+    [6, 7, 8],           //三行目のマス横並び
+    [0, 3, 6],           //一列目のマス縦並び
+    [1, 4, 7],           //二列目のマス縦並び
+    [2, 5, 8],           //三列目のマス縦並び
+    [0, 4, 8],           //左上からのマス斜め並び
+    [2, 4, 6]            //右上からのマス斜め並び
+];
+
+init();
+function init() {
+    start.addEventListener('click', playingfirst, false);
+    start2.addEventListener('click', playingsecond, false);
+}
+
+function changescene(hiddenscene, visiblescene) {
+    hiddenscene.classList.add("is-hidden");
+    hiddenscene.classList.remove("is-visible");
+    visiblescene.classList.add("is-visible");
+    visiblescene.classList.remove("is-hidden");
+}
+
+function playingfirst() {       //人間が先攻の場合
+    changescene(scenetop, scecedisplay);
+    mykifu.push(1);
+    console.log(mykifu);
+    player();
+}
+function playingsecond() {      //CPUが先攻の場合
+    changescene(scenetop, scecedisplay);
+    count = 3;
+    mykifu.push(2);
+    console.log(mykifu);
+    $("#next-turn").html("コンピューターが考えています...");
+    setTimeout("com();",3000)
+    // mykifu.push(i);
+    // console.log(mykifu);
+    player()
+}
+
+function turn_action() {
+    if (count % 2 == 0) {
+        $("#next-turn").html("コンピューターが考えています...");
+    } else {
+        $("#next-turn").html("あなたの番です");
+    }
+    Judgment();
+    count++;
+}
+
+
+
+//マスがクリックされた時の処理
+function player() {
+    for (let i = 0; i < field.length; i++) {
+        field[i].onclick = () => {           //アロー関数。関数式をさらに簡易的に記述するために用いられる技法
+            if (board[i] == undefined) {     //undefindとは変数もしくは配列要素の初期値で、まだ値が代入されていないという意味
+                field[i].style.backgroundColor = "pink";
+                board[i] = 1;               //booleanの形で、置いたマスには1を代入している
+                mykifu.push(i);
+                console.log(mykifu);    //mykifuresultの配列に置いた場所を追加する
+                turn_action();
+                if (winflag) {          //winflagがTrueならこのままゲームを続ける。Falseならゲーム終了
+                    com();
+                }
+            }
+        }
+    }
+}
+
+
+
+
+// //人間が先手の場合の棋譜を作る
+// function mykifuresult(){
+//     mykifu.push(i);
+//     console.log(mykifu);
+
+
+// }
+
+//CPUが先手の場合の棋譜を作る
+function pckifuresult(){
+    pckifu.push(i);
+
+
+}
+
+
+
+//コンピュータ側の応手
+function com() {
+    game.classList.add('pointer-none');
+    //コンピューターが後手の場合の一手目
+    if (board[4] == 1 && count == 1) {      //中央のマスに駒が置かれていて、かつ後手の一手目の場合
+        drawingpiece(0);                    //右上のマスに駒を置く
+        mykifu.push(0);
+        console.log(mykifu);   //mykifuresultの配列に置いた場所を追加する
+        return;
+    } else if (count == 1) {
+        drawingpiece(4)
+        mykifu.push(4);
+        console.log(mykifu);   //mykifuresultの配列に置いた場所を追加する
+        return;
+    }
+    //2手目以降
+    if (count > 2) {
+        for (let j = 2; j > 0; j--) {      //for文を2から1になるまで繰り返す
+            for (let i = 0; i < win_patterns.length; i++) {    //for文を繰り返し、win_patternsと一致するものがないかを確認する
+                let patterns = win_patterns[i];    //win_patternsと比較するために、いま置かれているマスの情報としてpatternsという配列を用意
+                let square1 = (board[patterns[0]]);   
+                let square2 = (board[patterns[1]]);
+                let square3 = (board[patterns[2]]);
+
+                let x = square1 == undefined && square2 == j && square3 == j    //square1に何も置かれておらず、square2とsquare3に駒が置かれている場合
+                let y = square1 == j && square2 == undefined && square3 == j    //square2に何も置かれておらず、square1とsquare3に駒が置かれている場合
+                let z = square1 == j && square2 == j && square3 == undefined    //square3に何も置かれておらず、square1とsquare2に駒が置かれている場合
+
+                if (x) {
+                    drawingpiece(patterns[0]);
+                    mykifu.push(patterns[0]);
+                    console.log(mykifu);   //mykifuresultの配列に置いた場所を追加する
+                    return;
+                }
+                else if (y) {
+                    drawingpiece(patterns[1]);
+                    mykifu.push(patterns[1]);
+                    console.log(mykifu);   //mykifuresultの配列に置いた場所を追加する
+                    return;
+                }
+                else if (z) {
+                    drawingpiece(patterns[2]);
+                    mykifu.push(patterns[2]);
+                    console.log(mykifu);   //mykifuresultの配列に置いた場所を追加する
+                    return;
+                }
+            }
+        }
+    }
+    if (!count % 2 == 0) {       //CPUが一手目の場合
+        let flag = true;
+        while (flag) {
+            let random = Math.floor(Math.random() * board.length);    //9マスのどれかにランダムに駒を置く
+            if (board[random] == undefined) {      //ランダムで選んだマスに何も置かれていないかを判定
+                drawingpiece(random);
+                mykifu.push(random);   //mykifuの配列に駒を置いた場所を追加する
+                console.log(mykifu);   
+                flag = false;
+            }
+        }
+    }
+    function drawingpiece(place) {
+        setTimeout(function () {
+            field[place].style.backgroundColor = "skyblue";
+            board[place] = 2;
+            game.classList.remove('pointer-none');
+            turn_action();
+
+        }, 1000);
+    }
+}
+
+//三つ揃ったか判定
+function Judgment() {
+
+    for (let i = 0; i < win_patterns.length; i++) {
+        let patterns = win_patterns[i];
+        let square1 = (board[patterns[0]]);
+        let square2 = (board[patterns[1]]);
+        let square3 = (board[patterns[2]]);
+        completed = square1 && square1 == square2 && square2 == square3 && square3 == square1;
+        if (completed) {
+            if (count % 2 == 0) {
+                judgtextcreate(0);
+                return;
+            } else {
+                judgtextcreate(1);
+                return;
+            }
+        }
+    }
+    if (board.includes(undefined) == false && winflag) {
+        judgtextcreate(2)
+        return;
+    }
+
+
+    function judgtextcreate(result) {
+        let judgtext = ["おめでとう！あなたの勝ちです！", "コンピューターの勝ちです", "引き分けです"];
+        judgdisplay.textContent = judgtext[result];
+        changescene(scenetop, sceneend);
+        scecedisplay.classList.remove("is-visible");
+        scecedisplay.classList.add("is-hidden");
+
+
+        // 対戦結果の記録
+        let judg_log = ["勝ち","負け","引き分け"]
+        let jyunban = ["先攻","後攻"]
+        const value = judg_log[result]+"("+jyunban[jyunban_id]+')';
+        var kifuresult = mykifu;
+        
+
+        const now = new Date();
+        var target = document.getElementById("DateTimeDisp");
+        var Year = now.getFullYear();
+        var Month = now.getMonth()+1;
+        var Date1 = now.getDate();
+        var Hour = now.getHours();
+        var Min = now.getMinutes();
+        var Sec = now.getSeconds();
+        // target.innerHTML = Year + "年" + Month + "月" + Date + "日" + Hour + ":" + Min + ":" + Sec;
+
+        const key = ""+Year+"/"+Month+"/"+Date1+" "+Hour+":"+Min+":"+Sec;
+        localStorage.setItem(key,value);
+        const html = '<tr><th>'+key+'</th><td style="text-indent: 1em">'+value+'</td></tr>';
+        const key_kifu = key+"結果";
+        var kifuresult = JSON.stringify(mykifu);
+        localStorage.setItem(key_kifu,kifuresult);
+        $("#list").append(html);
+    
+
+        start3.textContent = "もう一度対戦する";
+        start3.onclick = () => { document.location.reload() };
+        game.classList.add('pointer-none');
+        winflag = false;
+        return;
+    }
+}
+
+
+$("#gu_btn").on("click",function(){   //グーボタン押下時
+
+let num = Math.ceil(Math.random()*3)
+
+console.log(num)
+
+if(num == 1){
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_gu.png";
+    document.getElementById("screen1").alt="グー";
+  $("#pc_hands").html("グー");
+  $("#judgement").html("あいこ");
+  $("#turn_result").html("あーいこーで・・・")
+  $('#screen1').show();
+  random_img();
+}else if(num == 2){
+    let janken_result = 2;
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_cho.png";
+document.getElementById("screen1").alt="チョキ";
+  $("#pc_hands").html("チョキ");
+  $("#judgment").html("勝ち");
+  $("#turn_result").html("勝ち！先攻です！")
+  jyunban_id = 0;
+  playingfirst();
+}else if(num == 3){
+    let janken_result = 3;
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_par.png";
+document.getElementById("screen1").alt="パー";
+    
+  $("#pc_hands").html("パー");
+  $("#judgement").html("負け");
+  $("#turn_result").html("負け・・・。後攻です！")
+  jyunban_id = 1;
+  playingsecond();
+  
+}});
+
+
+$("#cho_btn").on("click",function(){   //チョキボタン押下時
+let num = Math.ceil(Math.random()*3)
+
+console.log(num)
+
+if(num == 1){
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_gu.png";
+    document.getElementById("screen1").alt="グー";
+    $("#pc_hands").html("グー");
+    $("#judgement").html("負け");
+    $("#turn_result").html("負け・・・。後攻です！")
+    jyunban_id = 1;
+    playingsecond();
+}else if(num == 2){
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_cho.png";
+document.getElementById("screen1").alt="チョキ";
+  $("#pc_hands").html("チョキ");
+  $("#judgement").html("あいこ");
+  $("#turn_result").html("あーいこーで・・・")
+  $('#screen1').show();
+  random_img();
+}else if(num == 3){
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_par.png";
+document.getElementById("screen1").alt="パー";
+  $("#pc_hands").html("パー");
+  $("#judgement").html("勝ち");
+  $("#turn_result").html("勝ち！先攻です！")
+  jyunban_id = 0;
+  playingfirst();
+}});
+
+
+$("#par_btn").on("click",function(){   //パーボタン押下時
+let num = Math.ceil(Math.random()*3)
+console.log(num)
+if(num == 1){
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_gu.png";
+    document.getElementById("screen1").alt="グー";
+    $("#pc_hands").html("グー");
+    $("#judgement").html("勝ち");
+    $("#turn_result").html("勝ち！先攻です！")
+    jyunban_id = 0;
+    playingfirst(); 
+}else if(num == 2){
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_cho.png";
+    document.getElementById("screen1").alt="チョキ";
+    $("#pc_hands").html("チョキ");
+    $("#judgement").html("負け");
+    $("#turn_result").html("負け・・・。後攻です！")
+    jyunban_id = 1;
+    playingsecond();   //後手の関数を実行
+}else if(num == 3){
+    clearInterval(rotate_hds);
+    document.getElementById("screen1").src="img/PC_par.png";
+document.getElementById("screen1").alt="パー";
+  $("#pc_hands").html("パー");
+  $("#judgement").html("あいこ");
+  $("#turn_result").html("あーいこーで・・・")
+  $('#screen1').show();
+  random_img();
+}});
+
+$(function(){
+            
+            $('#btn').click(function(){
+                //#screen , #your_handsを表示させる
+                $('#screen1').show();
+                random_img();
+                $('#your_hands').show();
+                $("#turn_result").html("じゃんけん・・・")
+                //ボタンを非表示にする 
+                $(this).hide();
+            }); 
+
+});
+
+
+  let rotate_hds;
+  let pc_hands2;
+
+  function random_img(){  //PCじゃんけん画面の生成
+  rotate_hds = setInterval(function(){
+      pc_hands2 = Math.ceil(Math.random() * 3);
+      if(pc_hands2 == 1){
+            document.getElementById("screen1").src="img/PC_gu.png";
+      } else if(pc_hands2 == 2){
+            document.getElementById("screen1").src="img/PC_cho.png";
+      } else if(pc_hands2 == 3){
+            document.getElementById("screen1").src="img/PC_par.png";
+      }
+    },200);
+  }
+
+function ShowImage(){
+if ( janken_result == 1 ) {
+document.getElementById("screen1").src="img/gu.png";
+document.getElementById("screen1").alt="グー";
+}else if( janken_result == 2){
+document.getElementById("screen1").src="img/cho.png";
+document.getElementById("screen1").alt="チョキ";
+}else if( janken_result == 3) {
+document.getElementById("screen1").src="img/par.png";
+document.getElementById("screen1").alt="パー";
+}
+}
+
+
+
+//1.replay(棋譜再生) クリックイベント
+{$("#kifu_replay").on("click",function(){
+    for(let reset = 0; reset < 9; reset++) {
+        field[reset].style.backgroundColor = "white";
+}
+    const key = $("#replay").val();
+    const kifu_data = JSON.parse(localStorage.getItem(key+'結果') );
+    console.log(kifu_data);
+    var c = localStorage.length;
+    var q = [];
+    var q = kifu_data;
+    var z = 0;
+        if (q[0] == 1){
+            var z = 0;
+            var y = 0;
+            var setpoint = function(){
+                    y = y + 1;
+                    field[q[y]].style.backgroundColor = "skyblue";
+                    setTimeout(setpoint2,1000);
+                }
+                var setpoint2 = function(){
+                    y = y + 1;
+                    field[q[y]].style.backgroundColor = "pink";
+                    setTimeout(setpoint,1000);
+                }
+            const countup = () => {
+                console.log(z++);
+                
+                
+                }
+                setTimeout(setpoint,1000);
+                
+            const intervalId = setInterval(() =>{
+                countup();
+                if(z >= q.length){
+                    clearInterval(intervalId);
+                }},1000);
+        }else if(q[0] == 2){
+            var z = 0;
+            var y = 0;
+            var setpoint = function(){
+                    y = y + 1;
+                    field[q[y]].style.backgroundColor = "pink";
+                    setTimeout(setpoint2,1000);
+                }
+                var setpoint2 = function(){
+                    y = y + 1;
+                    field[q[y]].style.backgroundColor = "skyblue";
+                    setTimeout(setpoint,1000);
+                }
+            const countup = () => {
+                console.log(z++);
+                
+                
+                }
+                setTimeout(setpoint,1000);
+                
+            const intervalId = setInterval(() =>{
+                countup();
+                if(z >= q.length){
+                    clearInterval(intervalId);
+                }},1000);
+                
+}})};
+
+
+
+//2.clear クリックイベント
+$("#clear").on("click",function(){
+    localStorage.clear();
+    $("#list").empty();
+});
+
+//3.ページ読み込み：保存データ取得表示
+for(let i=0; i<localStorage.length; i++){
+    const key   = localStorage.key(i);
+    if (key.indexOf('結果') !== -1){
+    i++;    
+    }else {
+        const value = localStorage.getItem(key);
+    const html = '<tr><th>'+key+'</th><td style="text-indent: 1em">'+value+'</td></tr>';
+    $("#list").append(html);
+}
+}
+
+</script>
+</body>
+
+</html>

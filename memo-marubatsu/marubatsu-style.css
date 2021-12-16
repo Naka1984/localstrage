@@ -1,0 +1,289 @@
+div.is-hidden {
+    display: none;
+}
+div.is-visible {
+    display: block;
+}
+body {
+    text-align: center;
+    user-select: none;
+    background-image: url(img/haikei.jpg);    /* 背景画像指定 */
+}
+h1{
+    padding: 10px;
+    margin: auto;
+    font-weight: bold;
+    color:whitesmoke;/*文字色*/
+    background-color: brown;
+    text-align: center;
+}
+h2{
+    padding: 26px;
+    margin: auto;
+    color:#000;
+    background-color:orange;    
+    text-align: center;
+}
+p{
+    padding: 10px;
+    margin: auto;
+    text-align: center;
+    width: 600px;
+    font-weight: bold;
+    color:brown;/*文字色*/
+    
+}
+/* #start:hover{
+    background: #6091d3;
+    color: white;
+    cursor: pointer;/*カーソルをポインターに変える
+}
+#start2:hover{
+    background: #6091d3;
+    color: white;
+    cursor: pointer;/*カーソルをポインターに変える
+} */
+
+
+#start3:hover{
+    background: #6091d3;
+    color: white;
+    cursor: pointer;/*カーソルをポインターに変える*/
+}
+/* #start4:hover{
+    background: #6091d3;
+    color: white;
+    cursor: pointer;カーソルをポインターに変える
+} */
+#game{
+    margin-right: auto;/* 中央寄せ */
+    margin-left: auto;/* 中央寄せ */
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    flex-wrap:wrap;
+    align-content:stretch;
+    width: 400px;
+}
+#game.pointer-none{
+    pointer-events: none;
+}
+.field {
+    width:100px;
+    height: 100px;
+    padding: 0;
+    margin: 0;
+    color: #6091d3;/*文字色*/
+    border: solid 3px #6091d3;/*線*/
+    border-radius: 10px;/*角の丸み*/
+    background-color:floralwhite;
+  
+}
+.field:hover {
+    background: URL(img/gslogo2.png);
+    /*background: rgb(243, 236, 227);*/
+    border: 2px solid #333;
+    cursor: pointer;/*カーソルをポインターに変える*/
+}
+#top{
+    height: 25%;
+}
+
+
+body{
+    margin:0;
+    padding:0;
+    text-align:left;
+    font-size: 32px;
+}
+header{
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+main{
+    border-bottom:1px solid #ccc;
+}
+footer{
+    background-color: #fff;
+    border-bottom:1px solid #ccc;
+    text-align: center;
+}
+p{
+    font-size:200%;
+    text-align: center;
+    border-bottom:1px solid #fff;
+    height:20px;
+}
+ul{
+    padding: 0;
+    border-top: 1px solid #000000;
+    display:table;  /* 定義 */
+    table-layout: fixed;
+    width:100%;
+}
+li{
+    text-align: center;
+    list-style-type:none;
+    border: 1px solid #666;
+    background-color: #FFF;
+    display:table-cell;  /* 定義 */
+    vertical-align: middle;
+    cursor: pointer;
+}
+li:hover{
+    background: #0066CC;
+    color:#fff;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+  }
+  canvas {
+    display: block;
+  }
+  div#board{
+    position: relative;
+    width: 256px;
+    height: 256px;
+    background-color: black;
+  }
+  div.sq{
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background-color: green;
+  }
+  div.sq div.disc {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 24px;
+    background-color: white;
+  }
+  div#logarea{
+    margin: 8px 0;
+    padding: 4px;
+    border: 1px solid black;
+    white-space: pre;
+    width: 248px;
+    height: 120px;
+    overflow-y: scroll;
+  }
+
+
+
+
+.hand_imgs{
+    position: absolute;
+    top:50%;
+    margin-top:-90px;
+    left:50%;
+    margin-left:-90px;
+    height:180px;
+}
+
+#gu_btn{
+    margin:0 auto;
+    position:relative;
+    top:0;
+    left:0;
+    width:200px;
+    height:200px;
+    border-radius: 50%;
+}
+
+#cho_btn{
+    margin:0 auto;
+    position:absolute;
+    top:0;
+    left:350;
+    width:200px;
+    height:200px;
+    border-radius: 50%;
+}
+
+#par_btn{
+    margin:0 auto;
+    position:absolute;
+    top:0;
+    right:0;
+    width:200px;
+    height:200px;
+    border-radius: 50%;
+}
+
+#screen1{
+    margin:0 auto 10px;
+    width:500px;
+    height:300px;
+    border:solid 0px black;
+    background-color: none;
+    display:none; /* 追加 非表示 */
+    transition: opacity 3s; /* opacity要素(不透明度)の変更を3秒間かけて行う */
+}
+
+#your_hands{
+    margin:0 auto 30px;
+    width:900px;
+    height:200px;
+    position:relative;
+    display:none; /* 追加 非表示 */
+}
+
+
+.styled {
+    border: 0;
+    line-height: 2.5;
+    padding: 0 20px;
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    border-radius: 10px;
+    background-color: rgba(220, 0, 0, 1);
+    background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+                                      rgba(0, 0, 0, 0));
+    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+                inset -2px -2px 3px rgba(0, 0, 0, .6);
+}
+
+.styled:hover {
+    background-color: rgba(255, 0, 0, 1);
+}
+
+.styled:active {
+    box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+                inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+.wrapper {
+    background-image: url(img/haikei.jpg);    /* 背景画像指定 */
+}
+
+button {
+    /* ブラウザ特有のスタイルを無効に */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+  
+    /* 整える */
+    margin: 1em 0; /* 前後の隙間 */
+    padding: 0.6em 1em; /* 塗りの余白 */
+    font-size: 1em; /* フォントサイズ */
+    background-color: #1aa1ff; /* 背景色 */
+    color: #FFF; /* テキストカラー */
+    cursor: pointer; /* カーソルを指マークに */
+    border-radius: 3px; /* 角の丸み */
+    border: 0; /* 枠線を消す */
+    transition: 0.3s; /* ホバーの変化を滑らかに */
+  }
+  
+  /* ホバー時（カーソルをのせた時）の見た目 */
+  button:hover {
+    background-color: #064fda; /* 背景色 */
+  }
